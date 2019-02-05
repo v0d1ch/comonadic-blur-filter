@@ -28,3 +28,10 @@ experiment f (Store s a) = fmap s (f a)
 
 generateCoordinates :: [Coord]
 generateCoordinates = [Coord x x| x <- [0.. 100]]
+
+generateColours :: [RGB]
+generateColours = undefined
+
+generateImage :: [Coord] -> [RGB] -> Image
+generateImage = undefined
+
