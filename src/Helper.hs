@@ -25,3 +25,6 @@ seeks f (Store f' s) = Store f' (f s)
 -- Run an experiment in the store.
 experiment :: Functor f => (s -> f s) -> Store s a -> f a
 experiment f (Store s a) = fmap s (f a)
+
+generateCoordinates :: [Coord]
+generateCoordinates = [Coord x x| x <- [0.. 100]]
