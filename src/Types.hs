@@ -2,7 +2,8 @@
 
 module Types where
 
-import Control.Comonad hiding (duplicate)
+import Control.Comonad
+import Data.Word (Word8 (..))
 
 data Store s a = Store (s -> a) s
 
@@ -17,9 +18,6 @@ instance Comonad (Store s) where
   extend :: (Store s a -> b) -> Store s a -> Store s b
   extend f = fmap f . duplicate
 
-duplicate :: Store s a -> Store s (Store s a)
-duplicate (Store f s) = Store (\x -> Store f x) s
-
 data Coord = Coord Int Int deriving (Eq, Ord, Show)
-data RGB   = Int
-type Point = Store Coord RGB
+data RGB   = RGB Word8 Word8 Word8
+type Image = Store Coord RGB
