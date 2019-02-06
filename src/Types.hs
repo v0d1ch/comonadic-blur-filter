@@ -19,5 +19,7 @@ instance Comonad (Store s) where
   extend f = fmap f . duplicate
 
 data Coord = Coord Int Int deriving (Eq, Ord, Show)
-data RGB   = RGB Word8 Word8 Word8 deriving Show
+
+data RGB = RGB Word8 Word8 Word8 deriving Show
+
 type Image = Store Coord RGB

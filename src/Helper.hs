@@ -1,5 +1,7 @@
 module Helper where
 
+import Data.Word (Word8 (..))
+import System.Random
 import Types
 
 -- Get the store focus
@@ -29,9 +31,30 @@ experiment f (Store s a) = fmap s (f a)
 generateCoordinates :: [Coord]
 generateCoordinates = [Coord x x| x <- [0.. 100]]
 
-generateColours :: [RGB]
-generateColours = undefined
+randomWord8 :: IO [Word8]
+randomWord8 = do
+  g <- newStdGen
+  return $ randomRs (minBound, maxBound) g
 
-generateImage :: [Coord] -> [RGB] -> Image
-generateImage = undefined
+generateColours :: IO [RGB]
+generateColours = do
+  g <- newStdGen
+  randomNumbers <- randomWord8
+  let trio = take 300 (splitEvery 3 randomNumbers)
+  return $ genRgb trio
+  where
+    genRgb []  = []
+    genRgb (a:as) = do
+      color1 <- a
+      color2 <- a
+      color3 <- a
+      RGB color1 color2 color3 : genRgb as
+
+splitEvery :: Int -> [a] -> [[a]]
+splitEvery _ [] = []
+splitEvery n xs = as : splitEvery n bs
+  where (as,bs) = splitAt n xs
+
+-- generateImage :: IO [RGB] -> IO Image
+-- generateImage colors =  Store (\x -> coord !! x)
 
