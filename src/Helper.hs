@@ -34,21 +34,17 @@ generateCoordinates = [Coord x x| x <- [0.. 100]]
 randomWord8 :: IO [Word8]
 randomWord8 = do
   g <- newStdGen
-  return $ randomRs (minBound, maxBound) g
+  return $ take 300 $ randomRs (minBound, maxBound) g
 
 generateColours :: IO [RGB]
 generateColours = do
   g <- newStdGen
   randomNumbers <- randomWord8
-  let trio = take 300 (splitEvery 3 randomNumbers)
-  return $ genRgb trio
+  let trio = splitEvery 3 randomNumbers
+  return $ concatMap genRgb trio
   where
     genRgb []  = []
-    genRgb (a:as) = do
-      color1 <- a
-      color2 <- a
-      color3 <- a
-      RGB color1 color2 color3 : genRgb as
+    genRgb (a:b:c:as) = return $ RGB a b c
 
 splitEvery :: Int -> [a] -> [[a]]
 splitEvery _ [] = []
