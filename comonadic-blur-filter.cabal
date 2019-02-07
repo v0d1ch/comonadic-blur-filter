@@ -20,7 +20,7 @@ library
   -- exposed-modules:
   other-modules:       Helper
                        Types
-  -- other-extensions:
+  other-extensions: OverloadedStrings
   build-depends:       base ^>=4.11.1.0
                      , comonad
                      , random
@@ -32,7 +32,7 @@ executable comonadic-blur-filter
   main-is:             Main.hs
   other-modules:       Helper
                        Types
-  -- other-extensions:
+  other-extensions: OverloadedStrings
   build-depends:       base ^>=4.11.1.0
                      , comonad
                      , random

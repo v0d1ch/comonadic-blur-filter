@@ -3,7 +3,7 @@
 module Types where
 
 import Control.Comonad
-import Data.Word (Word8 (..))
+import Data.Word (Word8)
 
 data Store s a = Store (s -> a) s
 

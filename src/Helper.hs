@@ -63,3 +63,13 @@ generateImage = do
       safeRgb []        = (Coord 0 0, RGB 00 00 00)
       safeRgb ((_,b):_) = (Coord 0 0, b)
 
+rgbToAnsii :: String -> [RGB] -> [String]
+rgbToAnsii str rgbList = do
+  (RGB a b c) <- rgbList
+  return $ "\x1b[38;2;" ++ show a ++ ";" ++ show b ++ ";" ++ show c ++ ";m" ++ str ++ "\x1b[0m\n"
+
+prettyPrint :: IO String
+prettyPrint = do
+  colors <- generateColours
+  return $ head $ rgbToAnsii "SASA" colors
+
