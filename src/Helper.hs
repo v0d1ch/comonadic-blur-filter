@@ -1,6 +1,6 @@
 module Helper where
 
-import Data.Word (Word8 (..))
+import Data.Word (Word8)
 import System.Random
 import Types
 
@@ -38,19 +38,28 @@ randomWord8 = do
 
 generateColours :: IO [RGB]
 generateColours = do
-  g <- newStdGen
   randomNumbers <- randomWord8
   let trio = splitEvery 3 randomNumbers
   return $ concatMap genRgb trio
   where
-    genRgb []  = []
-    genRgb (a:b:c:as) = return $ RGB a b c
+    genRgb (a:b:c:_) = return $ RGB a b c
+    genRgb _   = []
 
 splitEvery :: Int -> [a] -> [[a]]
 splitEvery _ [] = []
 splitEvery n xs = as : splitEvery n bs
   where (as,bs) = splitAt n xs
 
--- generateImage :: IO [RGB] -> IO Image
--- generateImage colors =  Store (\x -> coord !! x)
+generateImage :: IO Image
+generateImage = do
+  colors <- generateColours
+  let d = zip generateCoordinates colors
+  return $ Store (\x -> snd . safeRgb $ findRgbVal d x) (Coord 0 0)
+    where
+      findRgbVal :: [(Coord, b)] -> Coord -> [(Coord, b)]
+      findRgbVal d x = filter (\(a,_) -> a == x) d
+
+      safeRgb :: [(a, RGB)] -> (Coord, RGB)
+      safeRgb []        = (Coord 0 0, RGB 00 00 00)
+      safeRgb ((_,b):_) = (Coord 0 0, b)
 
