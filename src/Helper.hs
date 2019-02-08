@@ -41,13 +41,18 @@ experiment f (Store s a) = fmap s (f a)
 randomWord8 :: IO [Word8]
 randomWord8 = do
   g <- newStdGen
-  return $ take 100 $ randomRs (minBound, maxBound) g
+  return $ take 300 $ randomRs (minBound, maxBound) g
 
 generateColours :: IO (V.Vector (V.Vector RGB))
 generateColours = do
   randomNumbers <- randomWord8
-  return $ V.map genRgb $ V.fromList (splitEvery 3 randomNumbers)
+  let allColors = V.map genRgb $ V.fromList (splitEvery 3 randomNumbers)
+  return $ go 0 10 allColors
   where
+    go start offset v =
+      if offset < V.length v
+         then (V.slice start offset v) V.++ (go offset (offset + 10) (V.drop offset v))
+         else v
     genRgb (a:b:c:_) = V.singleton (RGB a b c)
     genRgb _   = V.empty
 
@@ -60,8 +65,7 @@ generateImage :: IO Image
 generateImage = do
   colors <- generateColours
   return $
-    Store
-      (\(Coord x y) -> do
+    Store (\(Coord x y) -> do
          row <- colors V.!? x
          row V.!? y)
       (Coord 0 0)
