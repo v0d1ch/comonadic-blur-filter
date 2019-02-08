@@ -48,8 +48,7 @@ randomWord8 = do
 generateColours :: IO (V.Vector (V.Vector RGB))
 generateColours = do
   randomNumbers <- randomWord8
-  let trio = V.fromList $ splitEvery 3 randomNumbers
-  return $ V.map genRgb trio
+  return $ V.map genRgb $ V.fromList (splitEvery 3 randomNumbers)
   where
     genRgb (a:b:c:_) = V.singleton (RGB a b c)
     genRgb _   = V.empty
