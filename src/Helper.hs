@@ -1,5 +1,7 @@
 module Helper where
 
+import Data.List (sortBy)
+import Data.Ord (comparing)
 import Data.Word (Word8)
 import System.Random
 import Types
@@ -28,13 +30,18 @@ seeks f (Store f' s) = Store f' (f s)
 experiment :: Functor f => (s -> f s) -> Store s a -> f a
 experiment f (Store s a) = fmap s (f a)
 
+mkRange :: [(Int, Int)]
+mkRange =
+  let x = [0..100]
+   in [ (a,b) | b <- reverse x,a <- x]
+
 generateCoordinates :: [Coord]
-generateCoordinates = [Coord x x| x <- [0.. 100]]
+generateCoordinates = map (\(a,b) -> Coord a b) $ sortBy (comparing $ fst) mkRange
 
 randomWord8 :: IO [Word8]
 randomWord8 = do
   g <- newStdGen
-  return $ take 300 $ randomRs (minBound, maxBound) g
+  return $ take 10500 $ randomRs (minBound, maxBound) g
 
 generateColours :: IO [RGB]
 generateColours = do
@@ -54,22 +61,13 @@ generateImage :: IO Image
 generateImage = do
   colors <- generateColours
   let d = zip generateCoordinates colors
-  return $ Store (\x -> snd . safeRgb $ findRgbVal d x) (Coord 0 0)
+  return $ Store (\x -> safeRgb $ findRgbVal d x) (Coord 0 0)
     where
       findRgbVal :: [(Coord, b)] -> Coord -> [(Coord, b)]
       findRgbVal d x = filter (\(a,_) -> a == x) d
 
-      safeRgb :: [(a, RGB)] -> (Coord, RGB)
-      safeRgb []        = (Coord 0 0, RGB 00 00 00)
-      safeRgb ((_,b):_) = (Coord 0 0, b)
+      safeRgb :: [(Coord, RGB)] -> RGB
+      safeRgb []        = RGB 00 00 00
+      safeRgb ((_,b):_) = b
 
-rgbToAnsii :: String -> [RGB] -> [String]
-rgbToAnsii str rgbList = do
-  (RGB a b c) <- rgbList
-  return $ "\x1b[38;2;" ++ show a ++ ";" ++ show b ++ ";" ++ show c ++ ";m" ++ str ++ "\x1b[0m\n"
-
-prettyPrint :: IO String
-prettyPrint = do
-  colors <- generateColours
-  return $ head $ rgbToAnsii "SASA" colors
 
