@@ -23,6 +23,7 @@ library
   other-extensions: OverloadedStrings
   build-depends:       base ^>=4.11.1.0
                      , comonad
+                     , vector
                      , random
   hs-source-dirs:      src
   ghc-options: -Wall
@@ -35,6 +36,7 @@ executable comonadic-blur-filter
   other-extensions: OverloadedStrings
   build-depends:       base ^>=4.11.1.0
                      , comonad
+                     , vector
                      , random
   ghc-options: -Wall
   hs-source-dirs:      src

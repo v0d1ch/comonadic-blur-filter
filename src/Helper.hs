@@ -2,6 +2,7 @@ module Helper where
 
 import Data.List (sortBy)
 import Data.Ord (comparing)
+import qualified Data.Vector as V
 import Data.Word (Word8)
 import System.Random
 import Types
@@ -36,21 +37,22 @@ mkRange =
    in [ (a,b) | b <- reverse x,a <- x]
 
 generateCoordinates :: [Coord]
-generateCoordinates = map (\(a,b) -> Coord a b) $ sortBy (comparing $ fst) mkRange
+generateCoordinates =
+  map (\(a, b) -> Coord a b) $ sortBy (comparing $ fst) mkRange
 
 randomWord8 :: IO [Word8]
 randomWord8 = do
   g <- newStdGen
-  return $ take 10500 $ randomRs (minBound, maxBound) g
+  return $ take 100 $ randomRs (minBound, maxBound) g
 
-generateColours :: IO [RGB]
+generateColours :: IO (V.Vector (V.Vector RGB))
 generateColours = do
   randomNumbers <- randomWord8
-  let trio = splitEvery 3 randomNumbers
-  return $ concatMap genRgb trio
+  let trio = V.fromList $ splitEvery 3 randomNumbers
+  return $ V.map genRgb trio
   where
-    genRgb (a:b:c:_) = return $ RGB a b c
-    genRgb _   = []
+    genRgb (a:b:c:_) = V.singleton (RGB a b c)
+    genRgb _   = V.empty
 
 splitEvery :: Int -> [a] -> [[a]]
 splitEvery _ [] = []
@@ -60,14 +62,10 @@ splitEvery n xs = as : splitEvery n bs
 generateImage :: IO Image
 generateImage = do
   colors <- generateColours
-  let d = zip generateCoordinates colors
-  return $ Store (\x -> safeRgb $ findRgbVal d x) (Coord 0 0)
-    where
-      findRgbVal :: [(Coord, b)] -> Coord -> [(Coord, b)]
-      findRgbVal d x = filter (\(a,_) -> a == x) d
-
-      safeRgb :: [(Coord, RGB)] -> RGB
-      safeRgb []        = RGB 00 00 00
-      safeRgb ((_,b):_) = b
-
+  return $
+    Store
+      (\(Coord x y) -> do
+         row <- colors V.!? x
+         row V.!? y)
+      (Coord 0 0)
 
