@@ -1,11 +1,12 @@
+{-# LANGUAGE BangPatterns #-}
 module Helper
-  ( generateImage
-  , pos
+  ( pos
   , peek
   , peeks
   , seek
   , seeks
   , experiment
+  , generateImage
   )
   where
 
@@ -46,15 +47,10 @@ randomWord8 = do
 generateColours :: IO (V.Vector (V.Vector RGB))
 generateColours = do
   randomNumbers <- randomWord8
-  let allColors = V.map genRgb $ V.fromList (splitEvery 3 randomNumbers)
-  return $ go 0 10 allColors
+  let allColors = map (\(a:b:c:_) -> genRgb a b c) (splitEvery 3 randomNumbers)
+  return $ V.fromList (map V.fromList (splitEvery 10 allColors))
   where
-    go start offset v =
-      if offset < V.length v
-         then (V.slice start offset v) V.++ (go offset (offset + 10) (V.drop offset v))
-         else v
-    genRgb (a:b:c:_) = V.singleton (RGB a b c)
-    genRgb _   = V.empty
+    genRgb a b c = RGB a b c
 
 splitEvery :: Int -> [a] -> [[a]]
 splitEvery _ [] = []
