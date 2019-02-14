@@ -66,3 +66,7 @@ generateImage = do
          row V.!? y)
       (Coord 0 0)
 
+-- Apply filter should take x and y distance from the coordinate , apply the
+-- filter to the coordinates x' -> x and y' -> y and return changed image
+applyFilter :: X -> Y -> Coord -> Image -> IO Image
+applyFilter x y (Coord x' y') image = undefined
