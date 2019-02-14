@@ -20,6 +20,7 @@ library
   -- exposed-modules:
   other-modules:       Helper
                        Types
+                       Main
   default-extensions: OverloadedStrings
   build-depends:       base ^>=4.11.1.0
                      , comonad
