@@ -6,6 +6,7 @@ module Helper
   , seek
   , seeks
   , experiment
+  , generateColors
   , generateImage
   )
   where
@@ -44,8 +45,8 @@ randomWord8 = do
   g <- newStdGen
   return $ take 300 $ randomRs (minBound, maxBound) g
 
-generateColours :: IO (V.Vector (V.Vector RGB))
-generateColours = do
+generateColors :: IO (V.Vector (V.Vector RGB))
+generateColors = do
   randomNumbers <- randomWord8
   let allColors = map (\(a:b:c:_) -> genRgb a b c) (splitEvery 3 randomNumbers)
   return $ V.fromList (map V.fromList (splitEvery 10 allColors))
@@ -59,7 +60,7 @@ splitEvery n xs = as : splitEvery n bs
 
 generateImage :: IO Image
 generateImage = do
-  colors <- generateColours
+  colors <- generateColors
   return $
     Store (\(Coord x y) -> do
          row <- colors V.!? x
