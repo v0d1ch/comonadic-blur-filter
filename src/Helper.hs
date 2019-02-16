@@ -71,3 +71,4 @@ generateImage = do
 -- filter to the coordinates x' -> x and y' -> y and return changed image
 applyFilter :: X -> Y -> Coord -> Image -> IO Image
 applyFilter x y (Coord x' y') image = undefined
+
