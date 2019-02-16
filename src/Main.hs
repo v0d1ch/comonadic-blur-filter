@@ -23,20 +23,20 @@ background = black
 main :: IO ()
 main = do
   image <- generateImage
-  let randomCoordinates = [(x, y) | y <- [0,10 ..90], x <- [0,10..90]]
+  let randomCoordinates = [(x, y) | y <- [0 .. 9], x <- [0 .. 9]]
       p =
        map (\(x, y) ->
-          let x' = x `div` 10
-              y' = y `div` 10
+          let x' = x * 50
+              y' = y * 50
            in
-            case peek (Coord x' y') image of
+            case peek (Coord x y) image of
               Nothing -> error "Oh no"
               Just (RGB a b c) ->
                 translate
-                  (fromIntegral x)
-                  (fromIntegral y) $
+                  (fromIntegral x')
+                  (fromIntegral y') $
                   color (makeColorI (fromIntegral a) (fromIntegral b) (fromIntegral c) 100) $
-                  rectangleSolid 100 100)
+                  rectangleSolid 45 45)
                 randomCoordinates
       drawing = pictures p
   print p
