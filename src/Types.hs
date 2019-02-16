@@ -3,7 +3,6 @@
 module Types where
 
 import Control.Comonad
-import Data.Word (Word8)
 
 data Store s a = Store (s -> a) s
 
@@ -20,7 +19,7 @@ instance Comonad (Store s) where
 
 data Coord = Coord Int Int deriving (Eq, Ord, Show)
 
-data RGB = RGB Word8 Word8 Word8 deriving Show
+data RGB = RGB Int Int Int deriving Show
 
 type Image = Store Coord (Maybe RGB)
 type X     = Int

@@ -12,7 +12,6 @@ module Helper
   where
 
 import qualified Data.Vector as V
-import Data.Word (Word8)
 import System.Random
 import Types
 
@@ -40,14 +39,14 @@ seeks f (Store f' s) = Store f' (f s)
 experiment :: Functor f => (s -> f s) -> Store s a -> f a
 experiment f (Store s a) = fmap s (f a)
 
-randomWord8 :: IO [Word8]
-randomWord8 = do
+randomInt :: IO [Int]
+randomInt = do
   g <- newStdGen
-  return $ take 300 $ randomRs (minBound, maxBound) g
+  return $ take 300 $ randomRs (10, 255) g
 
 generateColors :: IO (V.Vector (V.Vector RGB))
 generateColors = do
-  randomNumbers <- randomWord8
+  randomNumbers <- randomInt
   let allColors = map (\(a:b:c:_) -> genRgb a b c) (splitEvery 3 randomNumbers)
   return $ V.fromList (map V.fromList (splitEvery 10 allColors))
   where
@@ -66,9 +65,4 @@ generateImage = do
          row <- colors V.!? x
          row V.!? y)
       (Coord 0 0)
-
--- Apply filter should take x and y distance from the coordinate , apply the
--- filter to the coordinates x' -> x and y' -> y and return changed image
-applyFilter :: X -> Y -> Coord -> Image -> IO Image
-applyFilter x y (Coord x' y') image = undefined
 

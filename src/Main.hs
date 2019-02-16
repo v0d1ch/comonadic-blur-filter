@@ -1,6 +1,6 @@
+{-# LANGUAGE ScopedTypeVariables #-}
 module Main where
 
-import qualified Data.Vector as V
 import Helper
 import Types
 import Graphics.Gloss
@@ -12,10 +12,10 @@ height :: Int
 height = 1000
 
 offset :: Int
-offset = 10
+offset = 0
 
 window :: Display
-window = InWindow "Pong" (width, height) (offset, offset)
+window = InWindow "Comonadic Filters" (width, height) (offset, offset)
 
 background :: Color
 background = black
@@ -23,14 +23,22 @@ background = black
 main :: IO ()
 main = do
   image <- generateImage
-  let randomCoordinates = [(x, y) | y <- [0..100], x <- [0 .. 100]]
+  let randomCoordinates = [(x, y) | y <- [0,10 ..90], x <- [0,10..90]]
       p =
-       concatMap (\(x, y) ->
-          case peek (Coord x y) image of
-            Nothing -> []
-            Just (RGB a b c) ->
-             [translate x y $ color (makeColor a b c 100) $ rectangleSolid 30 30]) randomCoordinates
+       map (\(x, y) ->
+          let x' = x `div` 10
+              y' = y `div` 10
+           in
+            case peek (Coord x' y') image of
+              Nothing -> error "Oh no"
+              Just (RGB a b c) ->
+                translate
+                  (fromIntegral x)
+                  (fromIntegral y) $
+                  color (makeColorI (fromIntegral a) (fromIntegral b) (fromIntegral c) 100) $
+                  rectangleSolid 100 100)
+                randomCoordinates
       drawing = pictures p
-
+  print p
   display window background drawing
 
