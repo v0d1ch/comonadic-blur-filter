@@ -16,10 +16,14 @@ instance Comonad (Store s) where
 
   extend :: (Store s a -> b) -> Store s a -> Store s b
   extend f = fmap f . duplicate
+  -- verbose: Store (\x -> f' $ Store f x) s
+
+-- duplicate :: Store s a -> Store s (Store s a)
+-- duplicate (Store f s) = Store (\x -> Store f x) s
 
 data Coord = Coord Int Int deriving (Eq, Ord, Show)
 
-data RGB = RGB Int Int Int deriving Show
+data RGB = RGB Int Int Int deriving (Show, Eq)
 
 type Image = Store Coord (Maybe RGB)
 type X     = Int

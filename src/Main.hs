@@ -36,7 +36,7 @@ main = do
                   (fromIntegral x')
                   (fromIntegral y') $
                   color (makeColorI (fromIntegral a) (fromIntegral b) (fromIntegral c) 100) $
-                  rectangleSolid 45 45)
+                  rectangleSolid 49 49)
                 randomCoordinates
       drawing = pictures p
   print p

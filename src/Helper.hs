@@ -11,6 +11,8 @@ module Helper
   )
   where
 
+import Control.Comonad
+import Data.Maybe (fromMaybe)
 import qualified Data.Vector as V
 import System.Random
 import Types
@@ -65,4 +67,23 @@ generateImage = do
          row <- colors V.!? x
          row V.!? y)
       (Coord 0 0)
+
+blur :: Image -> Maybe RGB
+blur image= fromMaybe (extract image) $ do
+    let self = fromMaybe (extract image)
+    topLeft     <- extractNeighbour (-1) (-1)
+    top         <- extractNeighbour   0  (-1)
+    topRight    <- extractNeighbour   1  (-1)
+    right       <- extractNeighbour   1    0
+    bottomRight <- extractNeighbour   1    1
+    bottom      <- extractNeighbour   0    1
+    bottomLeft  <- extractNeighbour (-1)   1
+    left        <- extractNeighbour (-1)   0
+    return $ fromIntegral $ (`div` 16) $
+        self * 4 +
+        top * 2 + right * 2 + bottom * 2 + left * 2 +
+        topLeft + topRight + bottomRight + bottomLeft
+  where
+    extractNeighbour :: Int -> Int -> Maybe RGB
+    extractNeighbour x y = peek (Coord x y) image
 
