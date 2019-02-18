@@ -28,3 +28,4 @@ data RGB = RGB Int Int Int deriving (Show, Eq)
 type Image = Store Coord (Maybe RGB)
 type X     = Int
 type Y     = Int
+

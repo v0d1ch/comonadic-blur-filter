@@ -4,12 +4,13 @@ module Main where
 import Helper
 import Types
 import Graphics.Gloss
+import Control.Comonad
 
 width :: Int
-width = 1000
+width = 500
 
 height :: Int
-height = 1000
+height = 500
 
 offset :: Int
 offset = 0
@@ -18,27 +19,30 @@ window :: Display
 window = InWindow "Comonadic Filters" (width, height) (offset, offset)
 
 background :: Color
-background = black
+background = white
 
 main :: IO ()
 main = do
   image <- generateImage
-  let randomCoordinates = [(x, y) | y <- [0 .. 9], x <- [0 .. 9]]
-      p =
-       map (\(x, y) ->
-          let x' = x * 50
-              y' = y * 50
-           in
-            case peek (Coord x y) image of
-              Nothing -> error "Oh no"
-              Just (RGB a b c) ->
-                translate
-                  (fromIntegral x')
-                  (fromIntegral y') $
-                  color (makeColorI (fromIntegral a) (fromIntegral b) (fromIntegral c) 100) $
-                  rectangleSolid 49 49)
-                randomCoordinates
-      drawing = pictures p
-  print p
-  display window background drawing
+  let randCoord = [(x, y) | y <- [0 .. 99], x <- [0 .. 99]]
+      drawing1 = pictures (imageToPicture image randCoord)
+      image2 = extend blur image
+      drawing2 = pictures (imageToPicture image2 randCoord)
+  display window background drawing1
+  display window background drawing2
+  where
+      imageToPicture img coords =
+        map (\(x, y) ->
+            let x' = x * 10
+                y' = y * 10
+            in
+              case peek (Coord x y) img of
+                Nothing -> error "Oh no"
+                Just (RGB a b c) ->
+                  translate
+                    (fromIntegral x')
+                    (fromIntegral y') $
+                    color (makeColorI (fromIntegral a) (fromIntegral b) (fromIntegral c) 100) $
+                    rectangleSolid 10 10)
+                  coords
 

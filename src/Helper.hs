@@ -8,6 +8,7 @@ module Helper
   , experiment
   , generateColors
   , generateImage
+  , blur
   )
   where
 
@@ -44,13 +45,13 @@ experiment f (Store s a) = fmap s (f a)
 randomInt :: IO [Int]
 randomInt = do
   g <- newStdGen
-  return $ take 300 $ randomRs (10, 255) g
+  return $ take 30000 $ randomRs (0, 255) g
 
 generateColors :: IO (V.Vector (V.Vector RGB))
 generateColors = do
   randomNumbers <- randomInt
   let allColors = map (\(a:b:c:_) -> genRgb a b c) (splitEvery 3 randomNumbers)
-  return $ V.fromList (map V.fromList (splitEvery 10 allColors))
+  return $ V.fromList (map V.fromList (splitEvery 100 allColors))
   where
     genRgb a b c = RGB a b c
 
@@ -68,8 +69,14 @@ generateImage = do
          row V.!? y)
       (Coord 0 0)
 
+(+:) :: RGB -> RGB -> RGB
+(+:) (RGB a b c) (RGB d e f) =
+  RGB ((a + d) `div` 2) ((b + e) `div` 2) ((c + f) `div` 2)
+
+infixl 6 +:
+
 blur :: Image -> Maybe RGB
-blur image= fromMaybe (extract image) $ do
+blur image = fromMaybe (extract image) $ do
     let self = fromMaybe (extract image)
     topLeft     <- extractNeighbour (-1) (-1)
     top         <- extractNeighbour   0  (-1)
@@ -79,11 +86,13 @@ blur image= fromMaybe (extract image) $ do
     bottom      <- extractNeighbour   0    1
     bottomLeft  <- extractNeighbour (-1)   1
     left        <- extractNeighbour (-1)   0
-    return $ fromIntegral $ (`div` 16) $
-        self * 4 +
-        top * 2 + right * 2 + bottom * 2 + left * 2 +
-        topLeft + topRight + bottomRight + bottomLeft
+    return $ Just $ -- fromIntegral $ (`div` 16) $
+        -- self * 4 +
+        -- top * 2 + right * 2 + bottom * 2 + left * 2 +
+        topLeft +: topRight +: bottomRight +: bottomLeft
   where
     extractNeighbour :: Int -> Int -> Maybe RGB
-    extractNeighbour x y = peek (Coord x y) image
+    extractNeighbour x y =
+      let (Coord x' y') = pos image
+      in peek (Coord (x' + x) (y' + y)) image
 
