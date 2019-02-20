@@ -28,21 +28,24 @@ main = do
       drawing1 = pictures (imageToPicture image randCoord)
       image2 = extend blur image
       drawing2 = pictures (imageToPicture image2 randCoord)
-  display window background drawing1
+  -- _ <- print drawing1
+  _ <- print drawing2
+  -- display window background drawing1
   display window background drawing2
-  where
-      imageToPicture img coords =
-        map (\(x, y) ->
-            let x' = x * 10
-                y' = y * 10
-            in
-              case peek (Coord x y) img of
-                Nothing -> error "Oh no"
-                Just (RGB a b c) ->
-                  translate
-                    (fromIntegral x')
-                    (fromIntegral y') $
-                    color (makeColorI (fromIntegral a) (fromIntegral b) (fromIntegral c) 100) $
-                    rectangleSolid 10 10)
-                  coords
+
+imageToPicture :: Image -> [(Int, Int)] -> [Picture]
+imageToPicture img coords =
+  map (\(x, y) ->
+      let x' = x * 10
+          y' = y * 10
+      in
+        case peek (Coord x y) img of
+          Nothing -> error "Oh no"
+          Just (RGB a b c) ->
+            translate
+              (fromIntegral x')
+              (fromIntegral y') $
+              color (makeColorI (fromIntegral a) (fromIntegral b) (fromIntegral c) 100) $
+              rectangleSolid 10 10)
+            coords
 
