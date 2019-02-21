@@ -71,13 +71,28 @@ generateImage = do
 
 (+:) :: RGB -> RGB -> RGB
 (+:) (RGB a b c) (RGB d e f) =
-  RGB (abs $ (a + d) `div` 2) (abs $ (b + e) `div` 2) (abs (c + f) `div` 2)
+  RGB ((a + d) `div` 2) ((b + e) `div` 2) ((c + f) `div` 2)
 
 infixl 6 +:
 
+(*:) :: RGB -> Int -> RGB
+(*:) (RGB a b c) i =
+  RGB ((a * i) `div` 2) ((b * i) `div` 2) ((c * i) `div` 2)
+
+infixl 6 *:
+
+(/:) :: RGB -> Int -> RGB
+(/:) (RGB a b c) i =
+  RGB (a `div` i) (b `div` i) (c `div` i)
+
+infixl 6 /:
+
+wordToInt :: Word -> Int
+wordToInt w = fromIntegral w
+
 blur :: Image -> Maybe RGB
 blur image = fromMaybe (extract image) $ do
-    let self = fromMaybe (extract image)
+    self        <- extract image
     topLeft     <- extractNeighbour (-1) (-1)
     top         <- extractNeighbour   0  (-1)
     topRight    <- extractNeighbour   1  (-1)
@@ -87,9 +102,9 @@ blur image = fromMaybe (extract image) $ do
     bottomLeft  <- extractNeighbour (-1)   1
     left        <- extractNeighbour (-1)   0
     return $ Just $
-      -- fromIntegral $ (`div` 16) $
-      -- self * 4 +
-      -- top * 2 + right * 2 + bottom * 2 + left * 2 +
+      (/: 16) $
+      (self *: 4) +:
+      top *: 2 +: right *: 2 +: bottom *: 2 +: left *: 2 +:
       topLeft +: topRight +: bottomRight +: bottomLeft
   where
     extractNeighbour :: Int -> Int -> Maybe RGB

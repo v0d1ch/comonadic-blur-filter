@@ -28,8 +28,8 @@ main = do
       drawing1 = pictures (imageToPicture image randCoord)
       image2 = extend blur image
       drawing2 = pictures (imageToPicture image2 randCoord)
-  -- _ <- print drawing1
-  -- _ <- print drawing2
+  -- print drawing1
+  print drawing2
   -- display window background drawing1
   display window background drawing2
 
