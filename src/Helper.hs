@@ -42,7 +42,7 @@ seeks f (Store f' s) = Store f' (f s)
 experiment :: Functor f => (s -> f s) -> Store s a -> f a
 experiment f (Store s a) = fmap s (f a)
 
-randomInt :: IO [Int]
+randomInt :: IO [Word]
 randomInt = do
   g <- newStdGen
   return $ take 30000 $ randomRs (0, 255) g
@@ -77,18 +77,21 @@ infixl 6 +:
 
 (*:) :: RGB -> Int -> RGB
 (*:) (RGB a b c) i =
-  RGB ((a * i) `div` 2) ((b * i) `div` 2) ((c * i) `div` 2)
+  RGB ((a * (intToWord i)) `div` 2) ((b * (intToWord i)) `div` 2) ((c * (intToWord i)) `div` 2)
 
 infixl 6 *:
 
 (/:) :: RGB -> Int -> RGB
 (/:) (RGB a b c) i =
-  RGB (a `div` i) (b `div` i) (c `div` i)
+  RGB (a `div` (intToWord i)) (b `div` (intToWord i)) (c `div` (intToWord i))
 
 infixl 6 /:
 
 wordToInt :: Word -> Int
 wordToInt w = fromIntegral w
+
+intToWord :: Int -> Word
+intToWord i = fromIntegral i
 
 blur :: Image -> Maybe RGB
 blur image = fromMaybe (extract image) $ do
@@ -102,8 +105,8 @@ blur image = fromMaybe (extract image) $ do
     bottomLeft  <- extractNeighbour (-1)   1
     left        <- extractNeighbour (-1)   0
     return $ Just $
-      (/: 16) $
-      (self *: 4) +:
+      (/: 11) $
+      (self *: 2) +:
       top *: 2 +: right *: 2 +: bottom *: 2 +: left *: 2 +:
       topLeft +: topRight +: bottomRight +: bottomLeft
   where
