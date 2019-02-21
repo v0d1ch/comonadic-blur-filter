@@ -28,10 +28,8 @@ main = do
       drawing1 = pictures (imageToPicture image randCoord)
       image2 = extend blur image
       drawing2 = pictures (imageToPicture image2 randCoord)
-  -- print drawing1
-  print drawing2
-  -- display window background drawing1
   display window background drawing2
+  -- animate window background (\_ -> drawing2)
 
 imageToPicture :: Image -> [(Int, Int)] -> [Picture]
 imageToPicture img coords =
