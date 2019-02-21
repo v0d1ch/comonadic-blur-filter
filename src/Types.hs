@@ -18,8 +18,8 @@ instance Comonad (Store s) where
   extend f = fmap f . duplicate
   -- verbose: Store (\x -> f' $ Store f x) s
 
--- duplicate :: Store s a -> Store s (Store s a)
--- duplicate (Store f s) = Store (\x -> Store f x) s
+  duplicate :: Store s a -> Store s (Store s a)
+  duplicate (Store f s) = Store (\x -> Store f x) s
 
 data Coord = Coord Int Int deriving (Eq, Ord, Show)
 
