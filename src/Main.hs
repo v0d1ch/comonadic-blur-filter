@@ -29,9 +29,10 @@ main = do
       image2 = extend blur image
       drawing2 = pictures (imageToPicture image2 randCoord)
   -- _ <- print drawing1
-  _ <- print drawing2
+  print $ peek (Coord 22 89) image2
+  -- _ <- print drawing2
   -- display window background drawing1
-  display window background drawing2
+  -- display window background drawing2
 
 imageToPicture :: Image -> [(Int, Int)] -> [Picture]
 imageToPicture img coords =
