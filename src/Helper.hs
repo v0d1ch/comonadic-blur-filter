@@ -1,4 +1,3 @@
-{-# LANGUAGE BangPatterns #-}
 module Helper
   ( pos
   , peek
@@ -53,7 +52,7 @@ generateColors = do
   let allColors = map (\(a:b:c:_) -> genRgb a b c) (splitEvery 3 randomNumbers)
   return $ V.fromList (map V.fromList (splitEvery 100 allColors))
   where
-    genRgb a b c = RGB a b c
+    genRgb = RGB
 
 splitEvery :: Int -> [a] -> [[a]]
 splitEvery _ [] = []
@@ -81,9 +80,11 @@ infixl 6 +:
 
 infixl 6 /:
 
+rgbDiv :: Word -> RGB -> RGB
+rgbDiv i (RGB a b c) = RGB (a `div` i) (b `div` i) (c `div` i)
+
 blur :: Image -> Maybe RGB
-blur image = fromMaybe (extract image) $ do
-    self        <- extract image
+blur image = fromMaybe self $ do
     topLeft     <- extractNeighbour (-1) (-1)
     top         <- extractNeighbour   0  (-1)
     topRight    <- extractNeighbour   1  (-1)
@@ -92,10 +93,11 @@ blur image = fromMaybe (extract image) $ do
     bottom      <- extractNeighbour   0    1
     bottomLeft  <- extractNeighbour (-1)   1
     left        <- extractNeighbour (-1)   0
-    let i = topLeft +: top +: topRight +: left +: right +: bottomLeft +: bottom +: bottomRight
-    return $ Just $
-      (topLeft /: i) +: (top /: i) +: (topRight /: i) +: (left /: i) +: (right /: i) +: (bottomLeft /: i) +: (bottom /: i) +: (bottomRight /: i)
+    return $ Just $ rgbDiv 6 (topLeft +: top +: topRight +: left +: right +: bottomLeft +: bottom +: bottomRight)
   where
+    self :: Maybe RGB
+    self = extract image
+
     extractNeighbour :: Int -> Int -> Maybe RGB
     extractNeighbour x y =
       let (Coord x' y') = pos image

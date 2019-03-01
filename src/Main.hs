@@ -29,10 +29,9 @@ main = do
       image2 = extend blur image
       drawing2 = pictures (imageToPicture image2 randCoord)
   display window background drawing2
-  -- animate window background (\_ -> drawing2)
 
 imageToPicture :: Image -> [(Int, Int)] -> [Picture]
-imageToPicture img coords =
+imageToPicture img =
   map (\(x, y) ->
       let x' = x * 10
           y' = y * 10
@@ -45,5 +44,4 @@ imageToPicture img coords =
               (fromIntegral y') $
               color (makeColorI (fromIntegral a) (fromIntegral b) (fromIntegral c) 100) $
               rectangleSolid 10 10)
-            coords
 
